@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +12,15 @@ import (
 func main() {
 	godotenv.Load()
 
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		dbURL = "postgres://postgres:123456@localhost:5432/chat_demo?sslmode=disable"
+	}
+	initDB(dbURL)
+	defer db.Close()
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/hello", helloHandler)
+	registerRoutes(mux)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -21,18 +28,17 @@ func main() {
 	}
 
 	log.Printf("Server listening on :%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, corsMiddleware(mux)))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), corsMiddleware(mux)))
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
-	allowedOrigin := os.Getenv("FRONTEND_URL")
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		allowedOrigin := os.Getenv("FRONTEND_URL")
 		if allowedOrigin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Username")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
@@ -40,12 +46,5 @@ func corsMiddleware(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(w, r)
-	})
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Hello, World!",
 	})
 }
