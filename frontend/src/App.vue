@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import Button from './components/ui/button/Button.vue'
 
 const message = ref<string | null>(null)
 const error = ref<string | null>(null)
@@ -20,6 +21,7 @@ onMounted(async () => {
   <p v-if="message">{{ message }}</p>
   <p v-else-if="error">{{ error }}</p>
   <p v-else>Loading...</p>
+  <Button>Button</Button>
 </template>
 
 <style scoped></style>
