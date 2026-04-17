@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { useUsername } from "@/lib/hooks"
+import ModeToggle from "@/components/ModeToggle.vue";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useUsername } from "@/lib/hooks";
 
 const username = useUsername();
 
 </script>
 
 <template>
-  <nav class="flex justify-end p-4 border-b border-b-border">
+  <nav class="flex justify-end p-4 border-b border-b-border gap-4">
+    <ModeToggle />
     <Dialog>
       <DialogTrigger as-child>
         <button class="relative cursor-pointer">
