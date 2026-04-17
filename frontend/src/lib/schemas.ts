@@ -9,3 +9,13 @@ export const roomSchema = z.object({
 })
 
 export type Room = z.infer<typeof roomSchema>
+
+export const messageSchema = z.object({
+  id: z.number(),
+  roomId: z.number(),
+  senderUsername: z.string(),
+  content: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type Message = z.infer<typeof messageSchema>

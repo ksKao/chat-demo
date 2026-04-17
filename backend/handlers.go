@@ -12,6 +12,7 @@ func registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/rooms/dm", createDMRoom)
 	mux.HandleFunc("POST /api/rooms/{id}/members", addMember)
 	mux.HandleFunc("POST /api/rooms/{id}/messages", sendMessage)
+	mux.HandleFunc("GET /api/rooms/{id}/messages", getMessages)
 	mux.HandleFunc("DELETE /api/rooms/{id}", deleteRoom)
 	mux.HandleFunc("GET /api/rooms", getRooms)
 	mux.HandleFunc("GET /api/unreads", getUnreads)
@@ -294,6 +295,49 @@ func getUnreads(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	writeJSON(w, http.StatusOK, unreads)
+}
+
+func getMessages(w http.ResponseWriter, r *http.Request) {
+	username := r.Header.Get("X-Username")
+	if username == "" {
+		writeError(w, http.StatusBadRequest, "X-Username header required")
+		return
+	}
+	roomID, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid room id")
+		return
+	}
+	var isMember bool
+	db.QueryRow(`SELECT EXISTS(SELECT 1 FROM room_members WHERE room_id = $1 AND username = $2)`, roomID, username).Scan(&isMember)
+	if !isMember {
+		writeError(w, http.StatusForbidden, "you are not a member of this room")
+		return
+	}
+	rows, err := db.Query(
+		`SELECT id, room_id, sender_username, content, created_at FROM messages WHERE room_id = $1 ORDER BY created_at ASC`,
+		roomID,
+	)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to get messages")
+		return
+	}
+	defer rows.Close()
+	type Message struct {
+		ID             int       `json:"id"`
+		RoomID         int       `json:"roomId"`
+		SenderUsername string    `json:"senderUsername"`
+		Content        string    `json:"content"`
+		CreatedAt      time.Time `json:"createdAt"`
+	}
+	messages := []Message{}
+	for rows.Next() {
+		var msg Message
+		if err := rows.Scan(&msg.ID, &msg.RoomID, &msg.SenderUsername, &msg.Content, &msg.CreatedAt); err == nil {
+			messages = append(messages, msg)
+		}
+	}
+	writeJSON(w, http.StatusOK, messages)
 }
 
 func clearUnreads(w http.ResponseWriter, r *http.Request) {

@@ -2,7 +2,7 @@
 import ModeToggle from "@/components/ModeToggle.vue";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useUsername } from "@/lib/hooks";
@@ -26,8 +26,10 @@ const username = useUsername();
         </button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>Update username</DialogTitle>
-        <DialogDescription class="sr-only">Update username</DialogDescription>
+        <DialogHeader>
+          <DialogTitle>Update username</DialogTitle>
+          <DialogDescription class="sr-only">Update username</DialogDescription>
+        </DialogHeader>
         <Field>
           <FieldLabel>Username</FieldLabel>
           <Input placeholder="Username" v-model="username" />

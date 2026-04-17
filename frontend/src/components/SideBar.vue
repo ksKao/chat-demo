@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AddRoomButton from "@/components/AddRoomButton.vue";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
@@ -37,7 +38,12 @@ const rooms = computed(() => {
     <template v-else>
       <Accordion type="multiple">
         <AccordionItem value="group">
-          <AccordionTrigger>Rooms</AccordionTrigger>
+          <div class="flex items-center gap-4">
+            <AddRoomButton type="group" />
+            <div class="grow">
+              <AccordionTrigger>Rooms</AccordionTrigger>
+            </div>
+          </div>
           <AccordionContent>
             <template v-if="rooms.groupRooms.length">
               <RouterLink v-for="room in rooms.groupRooms" :to="`/rooms/${room.id}`" :key="room.id"
@@ -49,7 +55,12 @@ const rooms = computed(() => {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="dm">
-          <AccordionTrigger>DMs</AccordionTrigger>
+          <div class="flex items-center gap-4">
+            <AddRoomButton type="dm" />
+            <div class="grow">
+              <AccordionTrigger>DMs</AccordionTrigger>
+            </div>
+          </div>
           <AccordionContent>
             <template v-if="rooms.dmRooms.length">
               <RouterLink v-for="room in rooms.dmRooms" :to="`/rooms/${room.id}`" :key="room.id"
