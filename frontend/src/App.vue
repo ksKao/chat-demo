@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
+import SideBar from '@/components/SideBar.vue';
+import TopBar from '@/components/TopBar.vue';
 import { Toaster } from '@/components/ui/sonner';
 import 'vue-sonner/style.css';
 
 </script>
 
 <template>
-  <h1>Chat Demo</h1>
-  <Button>
-    Button
-  </Button>
+  <TopBar />
+  <div class="grow flex">
+    <SideBar />
+    <main>
+
+    </main>
+  </div>
   <Toaster :position="'top-center'" rich-colors />
 </template>
 

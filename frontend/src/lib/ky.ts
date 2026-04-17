@@ -1,9 +1,9 @@
 import ky from 'ky'
-import { username } from './global'
+import { useUsername } from './hooks'
 
 export const kyClient = ky.create({
   prefix: `${import.meta.env.VITE_BACKEND_URL}/api`,
   headers: {
-    'X-Username': username.value,
+    'X-Username': useUsername().value,
   },
 })

@@ -44,9 +44,9 @@ func createRoom(w http.ResponseWriter, r *http.Request) {
 	var room struct {
 		ID              int       `json:"id"`
 		Name            string    `json:"name"`
-		IsDM            bool      `json:"is_dm"`
-		CreatorUsername string    `json:"creator_username"`
-		CreatedAt       time.Time `json:"created_at"`
+		IsDM            bool      `json:"isDm"`
+		CreatorUsername string    `json:"creatorUsername"`
+		CreatedAt       time.Time `json:"createdAt"`
 	}
 	err := db.QueryRow(
 		`INSERT INTO rooms (name, is_dm, creator_username) VALUES ($1, false, $2)
@@ -76,9 +76,9 @@ func createDMRoom(w http.ResponseWriter, r *http.Request) {
 	}
 	var room struct {
 		ID              int       `json:"id"`
-		IsDM            bool      `json:"is_dm"`
-		CreatorUsername string    `json:"creator_username"`
-		CreatedAt       time.Time `json:"created_at"`
+		IsDM            bool      `json:"isDm"`
+		CreatorUsername string    `json:"creatorUsername"`
+		CreatedAt       time.Time `json:"createdAt"`
 	}
 	err := db.QueryRow(
 		`INSERT INTO rooms (is_dm, creator_username) VALUES (true, $1)
@@ -169,10 +169,10 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 
 	var msg struct {
 		ID             int       `json:"id"`
-		RoomID         int       `json:"room_id"`
-		SenderUsername string    `json:"sender_username"`
+		RoomID         int       `json:"roomId"`
+		SenderUsername string    `json:"senderUsername"`
 		Content        string    `json:"content"`
-		CreatedAt      time.Time `json:"created_at"`
+		CreatedAt      time.Time `json:"createdAt"`
 	}
 	err = db.QueryRow(
 		`INSERT INTO messages (room_id, sender_username, content) VALUES ($1, $2, $3)
@@ -214,9 +214,9 @@ func getRooms(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	type Room struct {
 		ID              int       `json:"id"`
-		IsDM            bool      `json:"is_dm"`
-		CreatorUsername string    `json:"creator_username"`
-		CreatedAt       time.Time `json:"created_at"`
+		IsDM            bool      `json:"isDm"`
+		CreatorUsername string    `json:"creatorUsername"`
+		CreatedAt       time.Time `json:"createdAt"`
 		Name            *string   `json:"name"`
 	}
 	rooms := []Room{}
@@ -283,8 +283,8 @@ func getUnreads(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 	type Unread struct {
-		RoomID      int `json:"room_id"`
-		UnreadCount int `json:"unread_count"`
+		RoomID      int `json:"roomId"`
+		UnreadCount int `json:"unreadCount"`
 	}
 	unreads := []Unread{}
 	for rows.Next() {
