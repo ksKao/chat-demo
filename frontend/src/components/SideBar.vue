@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import AddRoomButton from "@/components/AddRoomButton.vue";
+import RoomActionDropdown from "@/components/RoomActionDropdown.vue";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import { useUsername } from "@/lib/hooks";
 import { useRooms } from "@/lib/queries/room.query";
 import type { Room } from "@/lib/schemas";
 import { AlertCircleIcon } from "lucide-vue-next";
 import { computed } from "vue";
 
+const username = useUsername();
 const { data, isLoading, error } = useRooms();
 
 const rooms = computed(() => {
@@ -36,7 +39,7 @@ const rooms = computed(() => {
       </Alert>
     </div>
     <template v-else>
-      <Accordion type="multiple">
+      <Accordion type="multiple" :default-value="['group', 'dm']">
         <AccordionItem value="group">
           <div class="flex items-center gap-4">
             <AddRoomButton type="group" />
@@ -46,9 +49,14 @@ const rooms = computed(() => {
           </div>
           <AccordionContent>
             <template v-if="rooms.groupRooms.length">
-              <RouterLink v-for="room in rooms.groupRooms" :to="`/rooms/${room.id}`" :key="room.id"
-                class="p-2 hover:bg-primary block rounded-md hover:text-primary-foreground">
-                {{ room.name }}
+              <RouterLink v-for="room in rooms.groupRooms" :to="`/rooms/${room.id}`" :key="room.id" class="h-0 w-0">
+                <div
+                  class="flex justify-between items-center p-2 hover:bg-primary rounded-md hover:text-primary-foreground h-12">
+                  <span>
+                    {{ room.name }}
+                  </span>
+                  <RoomActionDropdown v-if="room.creatorUsername === username" :room="room" />
+                </div>
               </RouterLink>
             </template>
             <i v-else>No Rooms</i>
@@ -64,7 +72,7 @@ const rooms = computed(() => {
           <AccordionContent>
             <template v-if="rooms.dmRooms.length">
               <RouterLink v-for="room in rooms.dmRooms" :to="`/rooms/${room.id}`" :key="room.id"
-                class="p-2 hover:bg-primary block rounded-md hover:text-primary-foreground">
+                class="p-2 hover:bg-primary flex items-center rounded-md hover:text-primary-foreground h-12">
                 {{ room.name }}
               </RouterLink>
             </template>

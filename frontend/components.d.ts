@@ -63,6 +63,7 @@ declare module 'vue' {
     AppLabel: typeof import('./src/components/ui/label/Label.vue')['default']
     AppMessage: typeof import('./src/components/Message.vue')['default']
     AppModeToggle: typeof import('./src/components/ModeToggle.vue')['default']
+    AppRoomActionDropdown: typeof import('./src/components/RoomActionDropdown.vue')['default']
     AppRoomView: typeof import('./src/components/RoomView.vue')['default']
     AppSeparator: typeof import('./src/components/ui/separator/Separator.vue')['default']
     AppSideBar: typeof import('./src/components/SideBar.vue')['default']

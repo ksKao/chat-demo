@@ -8,7 +8,7 @@ const username = useUsername();
 
 <template>
   <div
-    :class="`w-full p-4 rounded-md ${props.message.senderUsername === username ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'}`">
+    :class="`w-full p-4 rounded-md ${props.message.senderUsername !== username ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'}`">
     <div class="flex justify-between items-center">
       <b>{{ props.message.senderUsername }}</b>
       <i class="text-muted-foreground">{{ props.message.createdAt.toDateString() }}

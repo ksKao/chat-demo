@@ -30,3 +30,18 @@ export function useCreateDm() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [queryKeys.room] }),
   })
 }
+
+export function useAddRoomMember() {
+  return useMutation({
+    mutationFn: ({ roomId, username }: { roomId: number; username: string }) =>
+      kyClient.post(`rooms/${roomId}/members`, { json: { username } }),
+  })
+}
+
+export function useDeleteRoom() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (roomId: number) => kyClient.delete(`rooms/${roomId}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [queryKeys.room] }),
+  })
+}
