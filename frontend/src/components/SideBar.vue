@@ -59,9 +59,9 @@ const unreadMap = computed(() => {
           </div>
           <AccordionContent>
             <template v-if="rooms.groupRooms.length">
-              <RouterLink v-for="room in rooms.groupRooms" :to="`/rooms/${room.id}`" :key="room.id" class="h-0 w-0">
+              <RouterLink v-for="room in rooms.groupRooms" :to="`/rooms/${room.id}`" :key="room.id" class="h-0 w-0 group">
                 <div
-                  class="flex justify-between items-center p-2 hover:bg-secondary rounded-md hover:text-secondory-foreground h-12">
+                  class="flex justify-between items-center p-2 hover:bg-secondary rounded-md hover:text-secondary-foreground h-12 mb-2 group-[.router-link-active]:bg-primary group-[.router-link-active]:text-primary-foreground group-[.router-link-active]:hover:bg-primary">
                   <span>
                     {{ room.name }}
                   </span>
@@ -83,7 +83,7 @@ const unreadMap = computed(() => {
           <AccordionContent>
             <template v-if="rooms.dmRooms.length">
               <RouterLink v-for="room in rooms.dmRooms" :to="`/rooms/${room.id}`" :key="room.id"
-                class="p-2 hover:bg-secondary flex items-center rounded-md hover:text-secondary-foreground h-12">
+                class="p-2 hover:bg-secondary flex items-center rounded-md hover:text-secondary-foreground h-12 mb-2 [&.router-link-active]:bg-primary [&.router-link-active]:text-primary-foreground [&.router-link-active]:hover:bg-primary">
                 {{ room.name }}
                 <Badge v-if="unreadMap[room.id]" class="ml-auto">{{ unreadMap[room.id] }}</Badge>
               </RouterLink>
