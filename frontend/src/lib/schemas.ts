@@ -10,6 +10,13 @@ export const roomSchema = z.object({
 
 export type Room = z.infer<typeof roomSchema>
 
+export const unreadSchema = z.object({
+  roomId: z.number(),
+  unreadCount: z.number(),
+})
+
+export type Unread = z.infer<typeof unreadSchema>
+
 export const messageSchema = z.object({
   id: z.number(),
   roomId: z.number(),

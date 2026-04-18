@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { useMessages, useSendMessage } from '@/lib/queries/message.query'
+import { useClearUnreads } from '@/lib/queries/room.query'
 import { AlertCircleIcon, SendIcon } from "lucide-vue-next"
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -13,6 +14,9 @@ const route = useRoute()
 const roomId = computed(() => Number(route.params.id))
 const { data, isLoading, error } = useMessages(roomId)
 const { mutate: sendMessage, isPending } = useSendMessage(roomId)
+const { mutate: clearUnreads } = useClearUnreads()
+
+watch(roomId, (id) => clearUnreads(id), { immediate: true })
 
 const content = ref('')
 const inputRef = ref<{ $el: HTMLInputElement } | null>(null)
@@ -54,7 +58,10 @@ function handleSend() {
     </p>
     <div v-else class="flex flex-col grow gap-4 min-h-0">
       <div ref="scrollRef" class="flex flex-col gap-4 overflow-y-auto grow min-h-0">
-        <ChatMessage v-for="message in data" :key="message.id" :message="message" />
+        <template v-if="data?.length">
+          <ChatMessage v-for="message in data" :key="message.id" :message="message" />
+        </template>
+        <div v-else class="flex w-full h-full items-center justify-center text-muted-foreground">No messages</div>
       </div>
       <form @submit.prevent="handleSend" class="flex gap-2">
         <Input ref="inputRef" v-model="content" placeholder="Message..." :disabled="isPending" class="flex-1" />

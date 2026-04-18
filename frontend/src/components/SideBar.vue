@@ -3,15 +3,17 @@ import AddRoomButton from "@/components/AddRoomButton.vue";
 import RoomActionDropdown from "@/components/RoomActionDropdown.vue";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { useUsername } from "@/lib/hooks";
-import { useRooms } from "@/lib/queries/room.query";
+import { useRooms, useUnreads } from "@/lib/queries/room.query";
 import type { Room } from "@/lib/schemas";
 import { AlertCircleIcon } from "lucide-vue-next";
 import { computed } from "vue";
 
 const username = useUsername();
 const { data, isLoading, error } = useRooms();
+const { data: unreadsData } = useUnreads();
 
 const rooms = computed(() => {
   const output: { dmRooms: Room[], groupRooms: Room[] } = { dmRooms: [], groupRooms: [] };
@@ -24,6 +26,14 @@ const rooms = computed(() => {
   }
 
   return output;
+})
+
+const unreadMap = computed(() => {
+  const map: Record<number, number> = {};
+  for (const u of unreadsData.value ?? []) {
+    map[u.roomId] = u.unreadCount;
+  }
+  return map;
 })
 </script>
 
@@ -51,10 +61,11 @@ const rooms = computed(() => {
             <template v-if="rooms.groupRooms.length">
               <RouterLink v-for="room in rooms.groupRooms" :to="`/rooms/${room.id}`" :key="room.id" class="h-0 w-0">
                 <div
-                  class="flex justify-between items-center p-2 hover:bg-primary rounded-md hover:text-primary-foreground h-12">
+                  class="flex justify-between items-center p-2 hover:bg-secondary rounded-md hover:text-secondory-foreground h-12">
                   <span>
                     {{ room.name }}
                   </span>
+                  <Badge v-if="unreadMap[room.id]" class="ml-auto mr-1">{{ unreadMap[room.id] }}</Badge>
                   <RoomActionDropdown v-if="room.creatorUsername === username" :room="room" />
                 </div>
               </RouterLink>
@@ -72,8 +83,9 @@ const rooms = computed(() => {
           <AccordionContent>
             <template v-if="rooms.dmRooms.length">
               <RouterLink v-for="room in rooms.dmRooms" :to="`/rooms/${room.id}`" :key="room.id"
-                class="p-2 hover:bg-primary flex items-center rounded-md hover:text-primary-foreground h-12">
+                class="p-2 hover:bg-secondary flex items-center rounded-md hover:text-secondary-foreground h-12">
                 {{ room.name }}
+                <Badge v-if="unreadMap[room.id]" class="ml-auto">{{ unreadMap[room.id] }}</Badge>
               </RouterLink>
             </template>
             <i v-else>No DMs</i>

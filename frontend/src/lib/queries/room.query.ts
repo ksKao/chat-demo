@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { kyClient } from '../ky'
 import { z } from 'zod/v4'
-import { roomSchema } from '../schemas'
+import { roomSchema, unreadSchema } from '../schemas'
 import { queryKeys } from '../queryKeys'
 
 export function useRooms() {
@@ -43,5 +43,21 @@ export function useDeleteRoom() {
   return useMutation({
     mutationFn: (roomId: number) => kyClient.delete(`rooms/${roomId}`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [queryKeys.room] }),
+  })
+}
+
+export function useUnreads() {
+  return useQuery({
+    queryKey: [queryKeys.unreads],
+    queryFn: async () => kyClient.get('unreads').json(z.array(unreadSchema)),
+    refetchInterval: 5000,
+  })
+}
+
+export function useClearUnreads() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (roomId: number) => kyClient.delete(`rooms/${roomId}/unreads`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [queryKeys.unreads] }),
   })
 }
