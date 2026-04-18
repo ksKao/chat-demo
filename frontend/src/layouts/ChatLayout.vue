@@ -4,11 +4,13 @@ import TopBar from '@/components/TopBar.vue'
 </script>
 
 <template>
-  <TopBar />
-  <div class="grow flex">
-    <SideBar />
-    <main class="grow">
-      <RouterView />
-    </main>
+  <div class="h-svh flex flex-col">
+    <TopBar />
+    <div class="flex grow overflow-hidden">
+      <SideBar />
+      <main class="grow flex flex-col overflow-hidden">
+        <RouterView />
+      </main>
+    </div>
   </div>
 </template>
