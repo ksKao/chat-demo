@@ -4,8 +4,9 @@ import { ref } from 'vue'
 import SideBar from '@/components/SideBar.vue'
 import type { Room, Unread } from '@/lib/schemas'
 
+const mockUsername = ref('alice')
 vi.mock('@/lib/hooks', () => ({
-  useUsername: () => ref('alice'),
+  useUsername: () => mockUsername,
 }))
 
 vi.mock('@/lib/queries/room.query', () => ({
@@ -39,6 +40,7 @@ const stubs = {
 
 describe('SideBar', () => {
   beforeEach(() => {
+    mockUsername.value = 'alice'
     vi.mocked(useRooms).mockReturnValue({
       data: ref(mockRooms),
       isLoading: ref(false),
@@ -93,5 +95,37 @@ describe('SideBar', () => {
     } as ReturnType<typeof useRooms>)
     const wrapper = mount(SideBar, { global: { stubs } })
     expect(wrapper.text()).toContain('No DMs')
+  })
+
+  describe('when username is empty', () => {
+    beforeEach(() => {
+      mockUsername.value = ''
+    })
+
+    it('shows set-username prompt', () => {
+      const wrapper = mount(SideBar, { global: { stubs } })
+      expect(wrapper.text()).toContain('Set your username')
+    })
+
+    it('does not show rooms or DMs', () => {
+      const wrapper = mount(SideBar, { global: { stubs } })
+      expect(wrapper.text()).not.toContain('general')
+      expect(wrapper.text()).not.toContain('Rooms')
+      expect(wrapper.text()).not.toContain('DMs')
+    })
+
+    it('calls useRooms with enabled: false', () => {
+      mount(SideBar, { global: { stubs } })
+      const calls = vi.mocked(useRooms).mock.calls
+      const call = calls[calls.length - 1]?.[0]
+      expect(call?.enabled?.value).toBe(false)
+    })
+
+    it('calls useUnreads with enabled: false', () => {
+      mount(SideBar, { global: { stubs } })
+      const calls = vi.mocked(useUnreads).mock.calls
+      const call = calls[calls.length - 1]?.[0]
+      expect(call?.enabled?.value).toBe(false)
+    })
   })
 })

@@ -1,12 +1,16 @@
 import ky, { HTTPError } from 'ky'
 import { useUsername } from './hooks'
 
+const username = useUsername()
+
 export const kyClient = ky.create({
   prefix: `${import.meta.env.VITE_BACKEND_URL}/api`,
-  headers: {
-    'X-Username': useUsername().value,
-  },
   hooks: {
+    beforeRequest: [
+      (request) => {
+        request.request.headers.set('X-Username', username.value)
+      },
+    ],
     beforeError: [
       async ({ error }) => {
         if (error instanceof HTTPError) {

@@ -12,8 +12,9 @@ import { AlertCircleIcon } from "lucide-vue-next";
 import { computed } from "vue";
 
 const username = useUsername();
-const { data, isLoading, error } = useRooms();
-const { data: unreadsData } = useUnreads();
+const hasUsername = computed(() => !!username.value);
+const { data, isLoading, error } = useRooms({ enabled: hasUsername });
+const { data: unreadsData } = useUnreads({ enabled: hasUsername });
 
 const rooms = computed(() => {
   const output: { dmRooms: Room[], groupRooms: Room[] } = { dmRooms: [], groupRooms: [] };
@@ -39,7 +40,10 @@ const unreadMap = computed(() => {
 
 <template>
   <aside class="border-r border-r-border h-full p-4 w-64">
-    <div v-if="isLoading" class="flex w-full h-full items-center justify-center">
+    <div v-if="!hasUsername" class="flex w-full h-full items-center justify-center text-center text-sm text-muted-foreground">
+      Set your username (top right) to get started.
+    </div>
+    <div v-else-if="isLoading" class="flex w-full h-full items-center justify-center">
       <Spinner />
     </div>
     <div v-else-if="error" class="flex w-full h-full items-center justify-center">
